@@ -4,9 +4,10 @@
 {% block title %}Upload et Prédiction{% endblock %}
 
 {% block content %}
+<div class="container">
     <div class="header">
-        <h1>Prédiction de Fréquentation du Tramway de Casablanca</h1>
-        <p>Uploadez un fichier CSV avec des données de date pour obtenir des prédictions.</p>
+        <h1>🚋 Prédiction de la Fréquentation du Tramway de Casablanca</h1>
+        <p>Uploadez un fichier CSV contenant une colonne <b>'Date'</b> (et optionnellement <b>'Nb_Passagers'</b>) pour générer des prédictions.</p>
     </div>
 
     <div class="form-section">
@@ -14,42 +15,49 @@
             <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
 
-        <form method="post" enctype="multipart/form-data" class="upload-form">
-            {% csrf_token %} {# Très important pour la sécurité Django #}
+        <form id="upload-form" method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %}
+            
             <div class="form-group">
-                <label for="csv_file">Fichier CSV (Date, Nb_Passagers, etc.):</label>
+                <label for="csv_file">📂 Sélectionnez votre fichier CSV :</label>
                 <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
             </div>
+
             <div class="form-group">
-                <label for="model_choice">Modèle de prédiction:</label>
+                <label for="model_choice">🧠 Choisissez le modèle de prédiction :</label>
                 <select name="model_choice" id="model_choice">
                     <option value="XGBoost" {% if model_used == "XGBoost" %}selected{% endif %}>XGBoost</option>
                     <option value="Random Forest" {% if model_used == "Random Forest" %}selected{% endif %}>Random Forest</option>
                     <option value="Linear Regression" {% if model_used == "Linear Regression" %}selected{% endif %}>Linear Regression</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Lancer la Prédiction</button>
+
+            <button type="submit" class="btn btn-primary">🚀 Lancer la Prédiction</button>
         </form>
+
+        <div id="loading" style="display: none; text-align:center; margin-top:20px;">
+            <p>⏳ Traitement en cours... Veuillez patienter.</p>
+        </div>
     </div>
 
     {% if predictions_df %}
         <div class="results-section">
-            <h2>Résultats de la Prédiction (Modèle: {{ model_used }})</h2>
+            <h2>📊 Résultats de la Prédiction (Modèle : {{ model_used }})</h2>
+            <div class="alert-success">✅ Prédiction terminée avec succès !</div>
+
             <div class="table-responsive">
-                {{ predictions_df|safe }} {# '|safe' est nécessaire pour afficher le HTML généré par pandas #}
+                {{ predictions_df|safe }}
             </div>
 
             <div id="predictionChart" style="height: 500px; width: 100%;"></div>
 
             <script>
-                // Charger les données pour le graphique
-                var chartData = JSON.parse('{{ chart_data_json|escapejs }}');
-                
-                var dates = chartData.map(item => item.Date);
-                var actuals = chartData.map(item => item.Passagers_Reels);
-                var predictions = chartData.map(item => item.Predictions);
+                const chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+                const dates = chartData.map(item => item.Date);
+                const actuals = chartData.map(item => item.Passagers_Reels);
+                const predictions = chartData.map(item => item.Predictions);
 
-                var trace1 = {
+                const trace1 = {
                     x: dates,
                     y: actuals,
                     mode: 'lines',
@@ -57,7 +65,7 @@
                     line: {color: 'blue'}
                 };
 
-                var trace2 = {
+                const trace2 = {
                     x: dates,
                     y: predictions,
                     mode: 'lines',
@@ -65,33 +73,26 @@
                     line: {color: 'red', dash: 'dash'}
                 };
 
-                var data = [trace1, trace2];
-
-                var layout = {
-                    title: 'Évolution des Passagers (Réels vs. Prédictions)',
-                    xaxis: {
-                        title: 'Date',
-                        type: 'date'
-                    },
-                    yaxis: {
-                        title: 'Nombre de Passagers'
-                    },
+                const layout = {
+                    title: 'Évolution des Passagers (Réels vs Prédictions)',
+                    xaxis: { title: 'Date', type: 'date' },
+                    yaxis: { title: 'Nombre de Passagers' },
                     hovermode: 'x unified'
                 };
 
-                Plotly.newPlot('predictionChart', data, layout);
+                Plotly.newPlot('predictionChart', [trace1, trace2], layout);
             </script>
         </div>
     {% elif history_data_json %}
-         <div class="initial-chart">
-            <h2>Données Historiques (Exemple)</h2>
+        <div class="initial-chart">
+            <h2>📈 Données Historiques (Exemple)</h2>
             <div id="historyChart" style="height: 500px; width: 100%;"></div>
             <script>
-                var historyData = JSON.parse('{{ history_data_json|escapejs }}');
-                var datesHistory = historyData.map(item => item.Date);
-                var actualsHistory = historyData.map(item => item.Passagers_Reels);
+                const historyData = JSON.parse('{{ history_data_json|escapejs }}');
+                const datesHistory = historyData.map(item => item.Date);
+                const actualsHistory = historyData.map(item => item.Passagers_Reels);
 
-                var traceHistory = {
+                const traceHistory = {
                     x: datesHistory,
                     y: actualsHistory,
                     mode: 'lines',
@@ -99,19 +100,22 @@
                     line: {color: 'green'}
                 };
 
-                var layoutHistory = {
+                const layoutHistory = {
                     title: 'Données Historiques des Passagers',
-                    xaxis: {
-                        title: 'Date',
-                        type: 'date'
-                    },
-                    yaxis: {
-                        title: 'Nombre de Passagers'
-                    }
+                    xaxis: { title: 'Date', type: 'date' },
+                    yaxis: { title: 'Nombre de Passagers' }
                 };
 
                 Plotly.newPlot('historyChart', [traceHistory], layoutHistory);
             </script>
-         </div>
+        </div>
     {% endif %}
+</div>
+
+<script>
+    // Affiche un message de chargement pendant le traitement
+    document.getElementById('upload-form').addEventListener('submit', function() {
+        document.getElementById('loading').style.display = 'block';
+    });
+</script>
 {% endblock %}

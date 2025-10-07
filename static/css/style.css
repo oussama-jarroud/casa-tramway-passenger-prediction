@@ -1,88 +1,87 @@
+/* ============================
+   STYLE GLOBAL - CASA TRAMWAY APP
+   ============================ */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
+    background: #f6f8fb;
     margin: 0;
-    background-color: #f4f4f4;
+    padding: 0;
     color: #333;
 }
-.navbar {
-    background-color: #007bff;
-    padding: 15px 20px;
-    color: white;
-    text-align: center;
-}
-.navbar-brand {
-    color: white;
-    text-decoration: none;
-    font-size: 1.5em;
-    font-weight: bold;
-}
+
+/* Conteneur principal */
 .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 8px;
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-.header {
+
+/* Titres */
+h1, h2, h3 {
+    color: #1e3a8a;
     text-align: center;
-    margin-bottom: 30px;
-}
-.form-section, .results-section, .initial-chart {
-    margin-bottom: 40px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fdfdfd;
-}
-.upload-form .form-group {
-    margin-bottom: 15px;
-}
-.upload-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-.upload-form input[type="file"],
-.upload-form select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-}
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    padding: 10px;
-    border-radius: 4px;
     margin-bottom: 20px;
 }
-.table-responsive {
-    overflow-x: auto;
+
+/* Boutons */
+button, .btn {
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
 }
-.table {
+
+button:hover, .btn:hover {
+    background-color: #1d4ed8;
+}
+
+/* Inputs & Upload */
+input[type="file"], input[type="text"], select {
     width: 100%;
-    border-collapse: collapse;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 10px 0 20px;
+}
+
+input:focus, select:focus {
+    border-color: #2563eb;
+    outline: none;
+}
+
+/* Spinner de chargement */
+#loading {
+    display: none;
+    text-align: center;
     margin-top: 20px;
+    font-weight: bold;
+    color: #2563eb;
 }
-.table th, .table td {
-    border: 1px solid #dee2e6;
-    padding: 8px;
-    text-align: left;
+
+/* Message de succès */
+.alert-success {
+    background: #dcfce7;
+    color: #166534;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 15px;
 }
-.table th {
-    background-color: #e9ecef;
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        margin: 20px;
+        padding: 20px;
+    }
+    button {
+        width: 100%;
+    }
 }
