@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Prédiction Tramway Casablanca{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> {# Pour les graphiques #}
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'predict_view' %}" class="navbar-brand">Casa Tramway Predictor</a>
+    </nav>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script src="{% static 'js/main.js' %}"></script> {# Ton JS personnalisé #}
+</body>
+</html>

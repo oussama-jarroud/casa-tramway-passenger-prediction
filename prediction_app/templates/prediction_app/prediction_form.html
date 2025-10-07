@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Upload et Prédiction{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <h1>Prédiction de Fréquentation du Tramway de Casablanca</h1>
+        <p>Uploadez un fichier CSV avec des données de date pour obtenir des prédictions.</p>
+    </div>
+
+    <div class="form-section">
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %} {# Très important pour la sécurité Django #}
+            <div class="form-group">
+                <label for="csv_file">Fichier CSV (Date, Nb_Passagers, etc.):</label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
+            </div>
+            <div class="form-group">
+                <label for="model_choice">Modèle de prédiction:</label>
+                <select name="model_choice" id="model_choice">
+                    <option value="XGBoost" {% if model_used == "XGBoost" %}selected{% endif %}>XGBoost</option>
+                    <option value="Random Forest" {% if model_used == "Random Forest" %}selected{% endif %}>Random Forest</option>
+                    <option value="Linear Regression" {% if model_used == "Linear Regression" %}selected{% endif %}>Linear Regression</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Lancer la Prédiction</button>
+        </form>
+    </div>
+
+    {% if predictions_df %}
+        <div class="results-section">
+            <h2>Résultats de la Prédiction (Modèle: {{ model_used }})</h2>
+            <div class="table-responsive">
+                {{ predictions_df|safe }} {# '|safe' est nécessaire pour afficher le HTML généré par pandas #}
+            </div>
+
+            <div id="predictionChart" style="height: 500px; width: 100%;"></div>
+
+            <script>
+                // Charger les données pour le graphique
+                var chartData = JSON.parse('{{ chart_data_json|escapejs }}');
+                
+                var dates = chartData.map(item => item.Date);
+                var actuals = chartData.map(item => item.Passagers_Reels);
+                var predictions = chartData.map(item => item.Predictions);
+
+                var trace1 = {
+                    x: dates,
+                    y: actuals,
+                    mode: 'lines',
+                    name: 'Passagers Réels',
+                    line: {color: 'blue'}
+                };
+
+                var trace2 = {
+                    x: dates,
+                    y: predictions,
+                    mode: 'lines',
+                    name: 'Prédictions',
+                    line: {color: 'red', dash: 'dash'}
+                };
+
+                var data = [trace1, trace2];
+
+                var layout = {
+                    title: 'Évolution des Passagers (Réels vs. Prédictions)',
+                    xaxis: {
+                        title: 'Date',
+                        type: 'date'
+                    },
+                    yaxis: {
+                        title: 'Nombre de Passagers'
+                    },
+                    hovermode: 'x unified'
+                };
+
+                Plotly.newPlot('predictionChart', data, layout);
+            </script>
+        </div>
+    {% elif history_data_json %}
+         <div class="initial-chart">
+            <h2>Données Historiques (Exemple)</h2>
+            <div id="historyChart" style="height: 500px; width: 100%;"></div>
+            <script>
+                var historyData = JSON.parse('{{ history_data_json|escapejs }}');
+                var datesHistory = historyData.map(item => item.Date);
+                var actualsHistory = historyData.map(item => item.Passagers_Reels);
+
+                var traceHistory = {
+                    x: datesHistory,
+                    y: actualsHistory,
+                    mode: 'lines',
+                    name: 'Passagers Historiques',
+                    line: {color: 'green'}
+                };
+
+                var layoutHistory = {
+                    title: 'Données Historiques des Passagers',
+                    xaxis: {
+                        title: 'Date',
+                        type: 'date'
+                    },
+                    yaxis: {
+                        title: 'Nombre de Passagers'
+                    }
+                };
+
+                Plotly.newPlot('historyChart', [traceHistory], layoutHistory);
+            </script>
+         </div>
+    {% endif %}
+{% endblock %}
