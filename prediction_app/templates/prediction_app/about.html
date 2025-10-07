@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>À propos - Casa Tramway Prediction</title>
+    <link rel="stylesheet" href="{% static 'prediction_app/style.css' %}">
+</head>
+<body>
+<div class="container">
+    <h1>🚋 Casa Tramway Passenger Prediction</h1>
+    <p>Ce projet web utilise l’Intelligence Artificielle pour prédire le nombre de passagers du tramway de Casablanca.</p>
+
+    <h2>🧠 Technologies Utilisées</h2>
+    <ul>
+        <li><b>Backend :</b> Django + FastAPI + Python</li>
+        <li><b>Modèles ML :</b> Linear Regression, Random Forest, XGBoost</li>
+        <li><b>Frontend :</b> HTML, CSS, JavaScript</li>
+    </ul>
+
+    <h2>📊 Données</h2>
+    <p>Les données sont simulées à partir d’historiques réalistes (saisons, jours de semaine, événements).</p>
+
+    <a href="{% url 'index_view' %}" class="btn">⬅ Retour à l’accueil</a>
+</div>
+</body>
+</html>
